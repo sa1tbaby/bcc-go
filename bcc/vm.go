@@ -192,11 +192,8 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 
 func (v *Vm) ConnectPort(port *Port, exsist bool) error {
 	type TempPortCreate struct {
-		Vm          string   `json:"vm"`
-		Network     string   `json:"network"`
-		IpAddress   *string  `json:"ip_address,omitempty"`
-		FwTemplates []string `json:"fw_templates"`
-		Tags        []string `json:"tags"`
+		Vm   string   `json:"vm"`
+		Tags []string `json:"tags"`
 	}
 
 	var fwTemplates = make([]string, len(port.FirewallTemplates))
@@ -204,11 +201,8 @@ func (v *Vm) ConnectPort(port *Port, exsist bool) error {
 		fwTemplates[i] = fwTemplate.ID
 	}
 	args := &TempPortCreate{
-		Vm:          v.ID,
-		Network:     port.Network.ID,
-		IpAddress:   port.IpAddress,
-		FwTemplates: fwTemplates,
-		Tags:        convertTagsToNames(port.Tags),
+		Vm:   v.ID,
+		Tags: convertTagsToNames(port.Tags),
 	}
 
 	var err error
