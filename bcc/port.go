@@ -107,14 +107,12 @@ func (v *Vdc) CreateEmptyPort(port *Port) error {
 	}
 	args := &struct {
 		manager     *Manager
-		ID          string    `json:"id"`
 		IpAddress   *string   `json:"ip_address,omitempty"`
 		Network     *string   `json:"network,omitempty"`
 		FwTemplates []*string `json:"fw_templates"`
 		Tags        []string  `json:"tags"`
 		Vdc         *string   `json:"vdc,omitempty"`
 	}{
-		ID:          port.ID,
 		IpAddress:   port.IpAddress,
 		Network:     nil,
 		FwTemplates: fwTemplates,
