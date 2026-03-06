@@ -469,6 +469,9 @@ func (m *Manager) do(req *http.Request, url string, target interface{}, requestB
 		}
 	} else {
 		err = json.Unmarshal(b, target)
+		log.Printf("Unmarshalled response: %+v", target)
+		log.Printf("%s", b)
+		log.Printf("%s", string(b))
 		if err != nil {
 			return "", errors.Wrapf(err, "JSON decode failed on %s:\n%s", url, string(b))
 		}
