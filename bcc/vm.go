@@ -105,13 +105,12 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 		Value string `json:"value"`
 	}
 
-	tempFields := make([]*metadata, len(vm.Metadata))
+	metaDataList := make([]*metadata, len(vm.Metadata))
 	for idx := range vm.Metadata {
-		tempFields[idx] = &metadata{Field: vm.Metadata[idx].Field.ID, Value: vm.Metadata[idx].Value}
+		metaDataList[idx] = &metadata{Field: vm.Metadata[idx].Field.ID, Value: vm.Metadata[idx].Value}
 	}
 
 	type TempDisk struct {
-		ID             string `json:"id"`
 		Name           string `json:"name"`
 		Size           int    `json:"size"`
 		StorageProfile string `json:"storage_profile"`
@@ -120,17 +119,16 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 	diskList := make([]*TempDisk, len(vm.Disks))
 	for idx := range vm.Disks {
 		diskList[idx] = &TempDisk{
-			ID:             vm.Disks[idx].ID,
 			Name:           vm.Disks[idx].Name,
 			Size:           vm.Disks[idx].Size,
 			StorageProfile: vm.Disks[idx].StorageProfile.ID,
 		}
 	}
 
-	var _affGr []string
+	var affGrList []string
 	if vm.AffinityGroups != nil && len(vm.AffinityGroups) > 0 {
 		for _, group := range vm.AffinityGroups {
-			_affGr = append(_affGr, group.ID)
+			affGrList = append(affGrList, group.ID)
 		}
 	}
 
@@ -157,13 +155,13 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 		Template:       vm.Template.ID,
 		HotAdd:         vm.HotAdd,
 		Ports:          portList,
-		Metadata:       tempFields,
+		Metadata:       metaDataList,
 		UserData:       vm.UserData,
 		Disks:          diskList,
 		Floating:       nil,
 		Tags:           convertTagsToNames(vm.Tags),
 		Platform:       nil,
-		AffinityGroups: _affGr,
+		AffinityGroups: affGrList,
 	}
 
 	if vm.Floating != nil {
