@@ -110,9 +110,21 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 		tempFields[idx] = &metadata{Field: vm.Metadata[idx].Field.ID, Value: vm.Metadata[idx].Value}
 	}
 
-	diskList := make([]*idList, len(vm.Disks))
+	type TempDisk struct {
+		ID             string `json:"id"`
+		Name           string `json:"name"`
+		Size           int    `json:"size"`
+		StorageProfile string `json:"storage_profile"`
+	}
+
+	diskList := make([]*TempDisk, len(vm.Disks))
 	for idx := range vm.Disks {
-		diskList[idx] = &idList{ID: vm.Disks[idx].ID}
+		diskList[idx] = &TempDisk{
+			ID:             vm.Disks[idx].ID,
+			Name:           vm.Disks[idx].Name,
+			Size:           vm.Disks[idx].Size,
+			StorageProfile: vm.Disks[idx].StorageProfile.ID,
+		}
 	}
 
 	var _affGr []string
@@ -132,7 +144,7 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 		Ports          []*idList   `json:"ports"`
 		Metadata       []*metadata `json:"metadata"`
 		UserData       *string     `json:"user_data,omitempty"`
-		Disks          []*idList   `json:"disks"`
+		Disks          []*TempDisk `json:"disks"`
 		Floating       *string     `json:"floating"`
 		Tags           []string    `json:"tags"`
 		Platform       *string     `json:"platform,omitempty"`
