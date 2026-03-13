@@ -91,34 +91,28 @@ func (m *Manager) GetVm(id string) (vm *Vm, err error) {
 }
 
 func (v *Vdc) CreateVm(vm *Vm) error {
-	type TempPortCreate struct {
+	type idList struct {
 		ID string `json:"id"`
 	}
 
-	tempPorts := make([]*TempPortCreate, len(vm.Ports))
+	portList := make([]*idList, len(vm.Ports))
 	for idx := range vm.Ports {
-		tempPorts[idx] = &TempPortCreate{ID: vm.Ports[idx].ID}
+		portList[idx] = &idList{ID: vm.Ports[idx].ID}
 	}
 
-	type TempFields struct {
+	type metadata struct {
 		Field string `json:"field"`
 		Value string `json:"value"`
 	}
 
-	tempFields := make([]*TempFields, len(vm.Metadata))
+	tempFields := make([]*metadata, len(vm.Metadata))
 	for idx := range vm.Metadata {
-		tempFields[idx] = &TempFields{Field: vm.Metadata[idx].Field.ID, Value: vm.Metadata[idx].Value}
+		tempFields[idx] = &metadata{Field: vm.Metadata[idx].Field.ID, Value: vm.Metadata[idx].Value}
 	}
 
-	type TempDisk struct {
-		Name           string `json:"name"`
-		Size           int    `json:"size"`
-		StorageProfile string `json:"storage_profile"`
-	}
-
-	tempDisks := make([]*TempDisk, len(vm.Disks))
+	diskList := make([]*idList, len(vm.Disks))
 	for idx := range vm.Disks {
-		tempDisks[idx] = &TempDisk{Name: vm.Disks[idx].Name, Size: vm.Disks[idx].Size, StorageProfile: vm.Disks[idx].StorageProfile.ID}
+		diskList[idx] = &idList{ID: vm.Disks[idx].ID}
 	}
 
 	var _affGr []string
@@ -129,20 +123,20 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 	}
 
 	args := &struct {
-		Name           string            `json:"name"`
-		Cpu            int               `json:"cpu"`
-		Ram            float64           `json:"ram"`
-		Vdc            string            `json:"vdc"`
-		Template       string            `json:"template"`
-		HotAdd         bool              `json:"hotadd_feature"`
-		Ports          []*TempPortCreate `json:"ports"`
-		Metadata       []*TempFields     `json:"metadata"`
-		UserData       *string           `json:"user_data,omitempty"`
-		Disks          []*TempDisk       `json:"disks"`
-		Floating       *string           `json:"floating"`
-		Tags           []string          `json:"tags"`
-		Platform       *string           `json:"platform,omitempty"`
-		AffinityGroups []string          `json:"affinity_groups,omitempty"`
+		Name           string      `json:"name"`
+		Cpu            int         `json:"cpu"`
+		Ram            float64     `json:"ram"`
+		Vdc            string      `json:"vdc"`
+		Template       string      `json:"template"`
+		HotAdd         bool        `json:"hotadd_feature"`
+		Ports          []*idList   `json:"ports"`
+		Metadata       []*metadata `json:"metadata"`
+		UserData       *string     `json:"user_data,omitempty"`
+		Disks          []*idList   `json:"disks"`
+		Floating       *string     `json:"floating"`
+		Tags           []string    `json:"tags"`
+		Platform       *string     `json:"platform,omitempty"`
+		AffinityGroups []string    `json:"affinity_groups,omitempty"`
 	}{
 		Name:           vm.Name,
 		Cpu:            vm.Cpu,
@@ -150,10 +144,10 @@ func (v *Vdc) CreateVm(vm *Vm) error {
 		Vdc:            v.ID,
 		Template:       vm.Template.ID,
 		HotAdd:         vm.HotAdd,
-		Ports:          tempPorts,
+		Ports:          portList,
 		Metadata:       tempFields,
 		UserData:       vm.UserData,
-		Disks:          tempDisks,
+		Disks:          diskList,
 		Floating:       nil,
 		Tags:           convertTagsToNames(vm.Tags),
 		Platform:       nil,
