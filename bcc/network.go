@@ -132,7 +132,9 @@ func (n *Network) Update() (err error) {
 		Name string   `json:"name"`
 		Mtu  *int     `json:"mtu,omitempty"`
 		Tags []string `json:"tags"`
+		Vdc  string   `json:"vdc"`
 	}{
+		Vdc:  n.Vdc.Id,
 		Name: n.Name,
 		Mtu:  n.Mtu,
 		Tags: convertTagsToNames(n.Tags),
