@@ -361,6 +361,7 @@ func (m *Manager) WaitTask(taskId string) error {
 }
 
 func (m *Manager) log(format string, args ...interface{}) {
+
 	m.Logger.Debugf(format, args...)
 }
 
